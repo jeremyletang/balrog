@@ -36,6 +36,10 @@ impl PrivateKey {
     pub fn bytes(&self) -> &[u8] {
         &*self.bytes
     }
+
+    pub fn seed(&self) -> Vec<u8> {
+        return (*self.bytes.seed()).into();
+    }
 }
 
 impl Node {
@@ -120,9 +124,9 @@ impl Node {
     }
 
     // PrivateKey returns private key seed bytes
-    pub fn private_key_seed(&self) -> Vec<u8> {
+    pub fn private_key(&self) -> PrivateKey {
         let (_, prv) = self.keypair();
-        return (*prv.bytes.seed()).into();
+        return prv;
     }
 }
 
@@ -242,7 +246,7 @@ mod tests {
             }
             let node = node.unwrap();
 
-            let privk = node.private_key_seed();
+            let privk = node.private_key().seed();
             assert_eq!(t.want_priv, hex::encode(&privk));
 
             let pubk = node.public_key_with_prefix();
