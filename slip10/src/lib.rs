@@ -1,3 +1,5 @@
+#![feature(test)]
+
 use ed25519_compact::{KeyPair, Seed};
 use hmac::{Hmac, Mac, NewMac};
 use regex::Regex;
@@ -263,5 +265,26 @@ mod tests {
     fn it_works() {
         let result = 2 + 2;
         assert_eq!(result, 4);
+    }
+}
+
+#[cfg(test)]
+mod bench {
+    extern crate test;
+    use super::*;
+    use test::Bencher;
+
+    #[bench]
+    fn derive_100_keys(b: &mut Bencher) {
+        let seed = "000102030405060708090a0b0c0d0e0f";
+        let seed_bytes = hex::decode(seed).unwrap();
+        let node = Node::new_master_node(&seed_bytes).unwrap();
+        let mut i = 0;
+
+        b.iter(|| {
+            let n = node.derive(FIRST_HARDENED_INDEX + i);
+            assert!(n.is_ok());
+            i += 1;
+        });
     }
 }
