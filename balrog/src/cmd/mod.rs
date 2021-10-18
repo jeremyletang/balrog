@@ -1,5 +1,7 @@
+extern crate clap;
+
 use account::Account;
-use clap::{AppSettings, Clap};
+use clap::Parser;
 use init::Init;
 use list::List;
 use network::Network;
@@ -12,9 +14,9 @@ pub mod network;
 const DEFAULT_CONFIG_FOLDER: &'static str = ".balrog";
 
 /// The balrog wallet. An implementation of wallet for the vega network.
-#[derive(Clap, Debug)]
+#[derive(Parser, Debug)]
 #[clap(version = "1.0", author = "Jeremy Letang me@jeremyletang.com>")]
-#[clap(setting = AppSettings::ColoredHelp)]
+//#[clap(setting = AppSettings::ColoredHelp)]
 pub struct Opts {
     /// Sets a custom home directory for balrog
     #[clap(default_value_t, short, long)]
@@ -26,8 +28,8 @@ pub struct Opts {
     pub subcmd: SubCommands,
 }
 
-#[derive(Clap, Debug)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Parser, Debug)]
+//#[clap(setting = AppSettings::ColoredHelp)]
 pub enum SubCommands {
     #[clap(subcommand)]
     Account(Account),

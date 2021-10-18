@@ -1,13 +1,13 @@
-use clap::{AppSettings, Clap};
+use clap::{Args, Subcommand};
 
-#[derive(Clap, Debug)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Subcommand, Debug)]
+//#[clap(setting = AppSettings::ColoredHelp)]
 pub enum Network {
     #[clap(version = "1.0")]
     Import(NetworkImport),
 }
 
 /// List entities managed by balrog
-#[derive(Clap, Debug)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Args, Debug)]
+//#[clap(setting = AppSettings::ColoredHelp)]
 pub struct NetworkImport {}

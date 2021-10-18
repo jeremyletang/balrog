@@ -1,7 +1,7 @@
-use clap::{AppSettings, Clap};
+use clap::Args;
 
-#[derive(Clap, Debug)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Args, Debug)]
+//#[clap(setting = AppSettings::ColoredHelp)]
 pub struct Init {
     /// Force erasing existing configurations
     #[clap(short, long)]

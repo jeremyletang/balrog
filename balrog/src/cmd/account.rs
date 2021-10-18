@@ -1,8 +1,8 @@
-use clap::{AppSettings, Clap};
+use clap::{Args, Subcommand};
 
 /// Manage accounts
-#[derive(Clap, Debug)]
-#[clap(setting = AppSettings::ColoredHelp)]
+#[derive(Subcommand, Debug)]
+//#[clap(setting = AppSettings::ColoredHelp)]
 pub enum Account {
     #[clap(version = "1.0")]
     Generate(AccountGenerate),
@@ -12,18 +12,29 @@ pub enum Account {
 
     #[clap(version = "1.0")]
     Info(AccountInfo),
+
+    #[clap(version = "1.0")]
+    Import(AccountImport),
 }
 
-/// Generate new accounts an keypairs
-#[derive(Clap, Debug)]
+/// Generate new account
+#[derive(Args, Debug)]
 pub struct AccountGenerate {
     /// An address for which we want to derive new keys
     #[clap(short, long)]
     pub address: Option<String>,
 }
 
+/// Import an account using a keypair
+#[derive(Args, Debug)]
+pub struct AccountImport {
+    /// The mnemonic to be imported
+    #[clap(short, long)]
+    pub mnemonic: String,
+}
+
 /// Display informations about an account
-#[derive(Clap, Debug)]
+#[derive(Args, Debug)]
 pub struct AccountInfo {
     /// An address for which we want to derive new keys
     #[clap(short, long)]
@@ -31,7 +42,7 @@ pub struct AccountInfo {
 }
 
 /// Emit transaction to the network using an account and pubkey
-#[derive(Clap, Debug)]
+#[derive(Args, Debug)]
 pub struct AccountTransact {
     /// An address for which we want to derive new keys
     #[clap(short, long)]

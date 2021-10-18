@@ -1,11 +1,14 @@
 #![feature(test)]
 
+use base58::ToBase58;
 use ed25519_compact::{KeyPair, Seed};
 use hmac::{Hmac, Mac, NewMac};
 use regex::Regex;
 use sha2::Sha512;
+use std::error::Error as StdError;
+use std::fmt;
 
-const FIRST_HARDENED_INDEX: u32 = 0x80000000;
+pub const FIRST_HARDENED_INDEX: u32 = 0x80000000;
 const SEED_MODIFIER: &str = "ed25519 seed";
 
 #[derive(Debug)]
@@ -13,6 +16,25 @@ pub enum Error {
     InvalidPath,
     NoPublicDerivation,
     HmacError(String),
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "configuration error: {}", self.desc())
+    }
+}
+
+impl StdError for Error {}
+
+impl Error {
+    pub fn desc(&self) -> String {
+        use Error::*;
+        match self {
+            InvalidPath => "invalid derivation path".into(),
+            NoPublicDerivation => "no public derivation allowed with ed25519".into(),
+            HmacError(e) => format!("hmac error: {}", e),
+        }
+    }
 }
 
 pub struct Node {
@@ -80,12 +102,24 @@ impl Node {
         return Ok(Node::from_hash(&(hasher.finalize().into_bytes())));
     }
 
-    fn from_hash(hash: &[u8]) -> Node {
-        let mut chain_code = vec![0; 32];
-        chain_code.clone_from_slice(&hash[32..]);
+    pub fn from_hash(hash: &[u8]) -> Node {
         let mut key = vec![0; 32];
         key.clone_from_slice(&hash[..32]);
+        let mut chain_code = vec![0; 32];
+        chain_code.clone_from_slice(&hash[32..]);
         return Node { chain_code, key };
+    }
+
+    pub fn hash(&self) -> Vec<u8> {
+        let mut out = vec![];
+        out.extend_from_slice(&self.key);
+        out.extend_from_slice(&self.chain_code);
+        return out;
+    }
+
+    pub fn address(&self) -> String {
+        let (pkey, _) = self.keypair();
+        return pkey.bytes().to_base58();
     }
 
     pub fn derive(&self, i: u32) -> Result<Node, Error> {
