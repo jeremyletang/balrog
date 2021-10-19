@@ -30,13 +30,10 @@ pub fn run(home: &str, _force: bool) -> Result<Paths, Error> {
                 .to_string(),
         );
     } else if home_path.exists() && !home_path.is_dir() {
-        return Err(Error::RootPathIsNotADir);
+        return Err(Error::HomePathIsNotADir);
     } else {
-        for path in paths {
-            match ::std::fs::create_dir(&path) {
-                Ok(_) => { /* nothing to do */ }
-                Err(e) => return Err(Error::IoError(e)),
-            }
+        for path in paths.iter() {
+            let _ = ::std::fs::create_dir(&path)?;
         }
     }
     return Ok(Paths {

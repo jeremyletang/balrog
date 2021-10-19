@@ -1,25 +1,15 @@
 use account::Account;
-use errors::Error;
+pub use errors::Error;
 use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::io::Write;
+use std::path::{Path, PathBuf};
 
 mod account;
 mod aes;
 mod errors;
 
-pub fn generate(home: &str, passphrase: &str) -> Result<KeystoreGenerated, Error> {
-    let (_, kg) = Keystore::generate(passphrase)?;
-    return Ok(kg);
-}
-
-pub fn import(home: &str, mnemonic: &str, passphrase: &str) -> Result<KeystoreGenerated, Error> {
-    let (_, kg) = Keystore::import(mnemonic, passphrase)?;
-    return Ok(kg);
-}
-
-// pub fn load(home: &str, address: &str, passphrase: &str) -> Result<Keystore, Error> {
-
-// }
-
+const ACCOUNTS_PATH: &str = "accounts";
 const KEYSTORE_V1: u16 = 1;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -34,6 +24,7 @@ pub struct Keystore {
 pub struct KeystoreGenerated {
     pub address: String,
     pub mnemonic: String,
+    pub path: String,
 }
 
 impl Keystore {
@@ -45,6 +36,7 @@ impl Keystore {
         let kg = KeystoreGenerated {
             address: acc.address(),
             mnemonic: mnemonic.to_string(),
+            path: String::new(),
         };
         return Ok((Keystore::from_account(acc, passphrase), kg));
     }
@@ -54,6 +46,7 @@ impl Keystore {
         let kg = KeystoreGenerated {
             address: acc.address(),
             mnemonic: m,
+            path: String::new(),
         };
         return Ok((Keystore::from_account(acc, passphrase), kg));
     }
@@ -92,6 +85,40 @@ impl Keystore {
 pub enum Crypto {
     #[serde(rename = "aes-128")]
     AES128(aes::Aes128Cypher),
+}
+
+fn save(home: &str, ks: &Keystore) -> Result<PathBuf, Error> {
+    let path = Path::new(home)
+        .join(Path::new(ACCOUNTS_PATH))
+        .join(Path::new(&(ks.address.clone() + ".json")));
+    let serialized = serde_json::to_string(ks).unwrap();
+    let mut f = File::create(&path)?;
+    write!(f, "{}", serialized)?;
+    return Ok(path);
+}
+
+pub fn generate(home: &str, passphrase: &str) -> Result<KeystoreGenerated, Error> {
+    let (ks, mut kg) = Keystore::generate(passphrase)?;
+    let path = save(home, &ks)?;
+    kg.path = path.to_str().unwrap().to_string();
+    return Ok(kg);
+}
+
+pub fn import(home: &str, mnemonic: &str, passphrase: &str) -> Result<KeystoreGenerated, Error> {
+    let (ks, mut kg) = Keystore::import(mnemonic, passphrase)?;
+    let path = save(home, &ks)?;
+    kg.path = path.to_str().unwrap().to_string();
+    return Ok(kg);
+}
+
+pub fn load(home: &str, address: &str, passphrase: &str) -> Result<Keystore, Error> {
+    let path = Path::new(home)
+        .join(Path::new(ACCOUNTS_PATH))
+        .join(Path::new(&(address.to_string() + ".json")));
+
+    let contents = std::fs::read_to_string(path)?;
+    let ks = serde_json::from_str(&contents)?;
+    return Ok(ks);
 }
 
 #[cfg(test)]

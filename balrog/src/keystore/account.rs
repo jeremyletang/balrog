@@ -12,12 +12,7 @@ pub struct Account {
 
 impl Account {
     pub fn import(mnemonic: &str) -> Result<Account, Error> {
-        let m = match Mnemonic::parse_in(Language::English, mnemonic) {
-            Ok(m) => m,
-            Err(e) => {
-                return Err(Error::Bip39(e));
-            }
-        };
+        let m = Mnemonic::parse_in(Language::English, mnemonic)?;
         let seed = m.to_seed("");
         return Account::from_bip39_seed(&seed);
     }
@@ -30,12 +25,7 @@ impl Account {
     }
 
     fn from_bip39_seed(seed: &[u8]) -> Result<Account, Error> {
-        let node = match Node::new_master_node(&seed) {
-            Ok(n) => n,
-            Err(e) => {
-                return Err(Error::Slip10(e));
-            }
-        };
+        let node = Node::new_master_node(&seed)?;
         let node = node.derive(ORGIN_INDEX).unwrap();
         return Ok(Account { node, index_max: 1 });
     }

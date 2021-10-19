@@ -36,9 +36,9 @@ pub struct AccountImport {
 /// Display informations about an account
 #[derive(Args, Debug)]
 pub struct AccountInfo {
-    /// An address for which we want to derive new keys
+    /// The address from which we want to get information about
     #[clap(short, long)]
-    pub address: Option<String>,
+    pub address: String,
 }
 
 /// Emit transaction to the network using an account and pubkey
