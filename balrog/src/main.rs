@@ -49,7 +49,7 @@ fn handle_account_cmd(home: &str, acc: cmd::account::Account) -> Result<(), Erro
             }
         }
         Account::Import(import) => {
-            let passphrase = passphrase_with_confirmation()?;
+            let passphrase = passphrase("enter passphrase: ")?;
             print_success(&keystore::import(home, &import.mnemonic, &passphrase)?);
         }
         Account::Info(info) => {
