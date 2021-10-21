@@ -15,7 +15,7 @@ pub enum Error {
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "configuration error: {}", self.desc())
+        write!(f, "keystore error: {}", self.desc())
     }
 }
 
