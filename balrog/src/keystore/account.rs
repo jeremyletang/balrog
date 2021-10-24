@@ -1,5 +1,7 @@
 use super::Error;
 use bip39::{Language, Mnemonic};
+use hex;
+use serde::{Deserialize, Serialize, Serializer};
 use slip10::Node;
 
 const MAGIC_NB: u32 = 1789;
@@ -8,6 +10,21 @@ const ORGIN_INDEX: u32 = slip10::FIRST_HARDENED_INDEX + MAGIC_NB;
 pub struct Account {
     node: Node,
     index_max: u64,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Keypair {
+    #[serde(serialize_with = "serialize_bytes")]
+    pub public: Vec<u8>,
+    #[serde(serialize_with = "serialize_bytes")]
+    pub secret: Vec<u8>,
+}
+
+fn serialize_bytes<S>(v: &Vec<u8>, s: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    return s.serialize_str(&hex::encode(v));
 }
 
 impl Account {
@@ -26,7 +43,7 @@ impl Account {
 
     fn from_bip39_seed(seed: &[u8]) -> Result<Account, Error> {
         let node = Node::new_master_node(&seed)?;
-        let node = node.derive(ORGIN_INDEX).unwrap();
+        let node = node.derive(ORGIN_INDEX)?;
         return Ok(Account { node, index_max: 1 });
     }
 
@@ -49,5 +66,19 @@ impl Account {
         return self.node.hash();
     }
 
-    pub fn keypairs(&self) -> () {}
+    pub fn keypairs(&self) -> Result<Vec<Keypair>, Error> {
+        // always derive the second part of the path
+        let node = self.node.derive(slip10::FIRST_HARDENED_INDEX)?;
+        // now we can derive keys
+        let mut out = vec![];
+        for i in 1..self.index_max + 1 {
+            let n = node.derive(slip10::FIRST_HARDENED_INDEX + i as u32)?;
+            let (p, s) = n.keypair();
+            out.push(Keypair {
+                public: p.bytes().into(),
+                secret: s.bytes().into(),
+            });
+        }
+        return Ok(out);
+    }
 }

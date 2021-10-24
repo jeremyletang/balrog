@@ -1,3 +1,4 @@
+use crate::paths;
 use account::Account;
 pub use errors::Error;
 use serde::{Deserialize, Serialize};
@@ -9,8 +10,7 @@ mod account;
 mod aes;
 mod errors;
 
-const ACCOUNTS_PATH: &str = "accounts";
-const KEYSTORE_V1: u16 = 1;
+const KEYSTORE_V2: u16 = 2;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Keystore {
@@ -54,7 +54,7 @@ impl Keystore {
     fn from_account(account: Account, passphrase: &str) -> Keystore {
         return Keystore {
             address: account.address(),
-            version: KEYSTORE_V1,
+            version: KEYSTORE_V2,
             index: account.index_max(),
             crypto: Crypto::AES128(aes::Aes128Cypher::from_seed_and_passhprase(
                 &account.seed(),
@@ -77,8 +77,6 @@ impl Keystore {
         };
         return Ok(Account::from_seed(seed, self.index));
     }
-
-    // pub fn
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -87,10 +85,8 @@ pub enum Crypto {
     AES128(aes::Aes128Cypher),
 }
 
-fn save(home: &str, ks: &Keystore) -> Result<PathBuf, Error> {
-    let path = Path::new(home)
-        .join(Path::new(ACCOUNTS_PATH))
-        .join(Path::new(&(ks.address.clone() + ".json")));
+pub fn save(home: &str, ks: &Keystore) -> Result<PathBuf, Error> {
+    let path = paths::accounts_directory(home).join(Path::new(&(ks.address.clone() + ".json")));
     let serialized = serde_json::to_string(ks).unwrap();
     let mut f = File::create(&path)?;
     write!(f, "{}", serialized)?;
@@ -111,26 +107,39 @@ pub fn import(home: &str, mnemonic: &str, passphrase: &str) -> Result<KeystoreGe
     return Ok(kg);
 }
 
-pub fn load(home: &str, address: &str, passphrase: &str) -> Result<Keystore, Error> {
-    let path = Path::new(home)
-        .join(Path::new(ACCOUNTS_PATH))
-        .join(Path::new(&(address.to_string() + ".json")));
-
+pub fn load(home: &str, address: &str, _passphrase: &str) -> Result<Keystore, Error> {
+    let path = paths::accounts_directory(home).join(Path::new(&(address.to_string() + ".json")));
     let contents = std::fs::read_to_string(path)?;
     let ks = serde_json::from_str(&contents)?;
     return Ok(ks);
 }
 
+pub fn info(home: &str, address: &str, passphrase: &str) -> Result<KeystoreInfo, Error> {
+    let path = paths::accounts_directory(home).join(Path::new(&(address.to_string() + ".json")));
+    let contents = std::fs::read_to_string(path)?;
+    let ks: Keystore = serde_json::from_str(&contents)?;
+    let keypairs = ks.account(passphrase)?.keypairs()?;
+    return Ok(KeystoreInfo {
+        account: ks,
+        keypairs,
+    });
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct KeystoreInfo {
+    account: Keystore,
+    keypairs: Vec<account::Keypair>,
+}
+
 #[cfg(test)]
 mod test {
-    use super::*;
 
     #[test]
     fn serde_keystore() {
-        let seed = hex::decode("92a5b23c0b8a99e37d07df3fb9966917f5d06e02ddbd909c7e184371463e9fc92e69929e00b5ab250f49c3fb1c12f252de4fed2c1db88387094a0f8c4c9ccd6c").unwrap();
-        let ks = Keystore::new("saduibadsiucxabvsuifdiwud", 1, &seed, "secure passphrase");
+        let _seed = hex::decode("92a5b23c0b8a99e37d07df3fb9966917f5d06e02ddbd909c7e184371463e9fc92e69929e00b5ab250f49c3fb1c12f252de4fed2c1db88387094a0f8c4c9ccd6c").unwrap();
+        // let ks = Keystore::new("saduibadsiucxabvsuifdiwud", 1, &seed, "secure passphrase");
 
-        let s = serde_json::to_string(&ks).unwrap();
-        println!("{}", s);
+        // let s = serde_json::to_string(&ks).unwrap();
+        // println!("{}", s);
     }
 }

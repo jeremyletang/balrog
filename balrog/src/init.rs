@@ -1,10 +1,7 @@
 use crate::errors::Error;
+use crate::paths;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-
-const ACCOUNTS_PATH: &str = "accounts";
-const NETWORKS_PATH: &str = "networks";
-const CONFIG_PATH: &str = "config.toml";
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Paths {
@@ -17,9 +14,9 @@ pub struct Paths {
 
 pub fn run(home: &str, _force: bool) -> Result<Paths, Error> {
     let home_path = Path::new(home);
-    let accounts_path = home_path.join(Path::new(ACCOUNTS_PATH));
-    let networks_path = home_path.join(Path::new(NETWORKS_PATH));
-    let configuration_path = home_path.join(Path::new(CONFIG_PATH));
+    let accounts_path = paths::accounts_directory(home);
+    let networks_path = paths::networks_directory(home);
+    let configuration_path = paths::configuration_file(home);
     let paths = vec![home_path, accounts_path.as_path(), networks_path.as_path()];
     let mut info: Option<String> = None;
 

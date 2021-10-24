@@ -1,12 +1,19 @@
 use clap::{Args, Subcommand};
 
+/// List entities managed by balrog
 #[derive(Subcommand, Debug)]
-//#[clap(setting = AppSettings::ColoredHelp)]
 pub enum List {
+    /// List all existing wallets
     #[clap(version = "1.0")]
-    Account(ListAccount),
+    Accounts(ListAccounts),
+
+    /// List all registerd networks
+    #[clap(version = "1.0")]
+    Networks(ListNetworks),
 }
 
-/// List entities managed by balrog
 #[derive(Args, Debug)]
-pub struct ListAccount {}
+pub struct ListAccounts {}
+
+#[derive(Args, Debug)]
+pub struct ListNetworks {}

@@ -2,11 +2,13 @@ extern crate clap;
 
 use account::Account;
 use clap::Parser;
+use info::Info;
 use init::Init;
 use list::List;
 use network::Network;
 
 pub mod account;
+pub mod info;
 pub mod init;
 pub mod list;
 pub mod network;
@@ -34,6 +36,7 @@ pub enum SubCommands {
     #[clap(subcommand)]
     Account(Account),
     Init(Init),
+    Info(Info),
     #[clap(subcommand)]
     List(List),
     #[clap(subcommand)]
