@@ -186,9 +186,9 @@ fn is_valid_path(path: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    extern crate test;
+    // extern crate test;
     use super::*;
-    use test::Bencher;
+    // use test::Bencher;
 
     struct Args<'l> {
         path: &'l str,
@@ -295,17 +295,17 @@ mod tests {
         assert!(is_valid_path("m/0'/2147483647'/1'/2147483646'/2'"));
     }
 
-    #[bench]
-    fn derive_keys(b: &mut Bencher) {
-        let seed = "000102030405060708090a0b0c0d0e0f";
-        let seed_bytes = hex::decode(seed).unwrap();
-        let node = Node::new_master_node(&seed_bytes).unwrap();
-        let mut i = 0;
+    // #[bench]
+    // fn derive_keys(b: &mut Bencher) {
+    //     let seed = "000102030405060708090a0b0c0d0e0f";
+    //     let seed_bytes = hex::decode(seed).unwrap();
+    //     let node = Node::new_master_node(&seed_bytes).unwrap();
+    //     let mut i = 0;
 
-        b.iter(|| {
-            let n = node.derive(FIRST_HARDENED_INDEX + i);
-            assert!(n.is_ok());
-            i += 1;
-        });
-    }
+    //     b.iter(|| {
+    //         let n = node.derive(FIRST_HARDENED_INDEX + i);
+    //         assert!(n.is_ok());
+    //         i += 1;
+    //     });
+    // }
 }

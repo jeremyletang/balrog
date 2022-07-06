@@ -1,5 +1,5 @@
-use crate::errors::Error;
 use crate::paths;
+use crate::{config, errors::Error};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -32,6 +32,13 @@ pub fn run(home: &str, _force: bool) -> Result<Paths, Error> {
         for path in paths.iter() {
             let _ = ::std::fs::create_dir(&path)?;
         }
+        config::save(
+            home,
+            &config::Config {
+                account: "".into(),
+                network: "".into(),
+            },
+        )?;
     }
     return Ok(Paths {
         info,

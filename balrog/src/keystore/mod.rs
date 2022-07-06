@@ -127,8 +127,8 @@ pub fn info(home: &str, address: &str, passphrase: &str) -> Result<KeystoreInfo,
 
 #[derive(Serialize, Deserialize)]
 pub struct KeystoreInfo {
-    account: Keystore,
-    keypairs: Vec<account::Keypair>,
+    pub account: Keystore,
+    pub keypairs: Vec<account::Keypair>,
 }
 
 #[cfg(test)]

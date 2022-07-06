@@ -6,19 +6,22 @@ use info::Info;
 use init::Init;
 use list::List;
 use network::Network;
+use set::Set;
 
 pub mod account;
 pub mod info;
 pub mod init;
 pub mod list;
 pub mod network;
+pub mod set;
 
 const DEFAULT_CONFIG_FOLDER: &'static str = ".balrog";
 
 /// The balrog wallet. An implementation of wallet for the vega network.
 #[derive(Parser, Debug)]
 #[clap(version = "1.0", author = "Jeremy Letang me@jeremyletang.com>")]
-//#[clap(setting = AppSettings::ColoredHelp)]
+#[clap(name = "balrog")]
+#[clap(about = "An alternative vega wallet", long_about = None)]
 pub struct Opts {
     /// Sets a custom home directory for balrog
     #[clap(default_value_t, short, long)]
@@ -35,6 +38,8 @@ pub struct Opts {
 pub enum SubCommands {
     #[clap(subcommand)]
     Account(Account),
+    #[clap(subcommand)]
+    Set(Set),
     Init(Init),
     Info(Info),
     #[clap(subcommand)]

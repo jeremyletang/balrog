@@ -4,7 +4,10 @@ use errors::Error;
 use rpassword;
 use serde::Serialize;
 
+pub mod balances;
+mod client;
 mod cmd;
+mod config;
 mod errors;
 mod init;
 pub mod keystore;
@@ -12,6 +15,8 @@ mod list;
 pub mod paths;
 
 fn main() {
+    // let mut clt = CoreBlockingClient::connect("tcp://178.62.63.119:3007").unwrap();
+    // let resp = clt.last_block_height();
     let opts: Opts = Opts::parse();
     let home = opts.home.path();
 
@@ -24,12 +29,23 @@ fn main() {
             Ok(())
         }
         SubCommands::Init(args) => handle_init_cmd(&home, args),
+        SubCommands::Set(args) => handle_set_cmd(&home, args),
     };
 
     if let Err(e) = err {
         print_error(&e.desc());
         std::process::exit(1);
     }
+}
+
+fn handle_set_cmd(home: &str, args: cmd::set::Set) -> Result<(), Error> {
+    use cmd::set::Set;
+    let v = match args {
+        Set::Account(v) => config::set_account(home, &v.value)?,
+        Set::Network(v) => config::set_network(home, &v.value)?,
+    };
+    print_success(&v);
+    return Ok(());
 }
 
 fn handle_init_cmd(home: &str, args: cmd::init::Init) -> Result<(), Error> {
@@ -67,13 +83,51 @@ fn handle_account_cmd(home: &str, acc: cmd::account::Account) -> Result<(), Erro
             print_success(&keystore::import(home, &import.mnemonic, &passphrase)?);
         }
         Account::Info(info) => {
+            let address = address(home, info.address)?;
             let passphrase = passphrase("enter passphrase: ")?;
-            print_success(&keystore::info(home, &info.address, &passphrase)?);
+            print_success(&keystore::info(home, &address, &passphrase)?);
+        }
+        Account::Balances(b) => {
+            let address = address(home, b.address)?;
+            let network = network(home, b.network)?;
+            let passphrase = passphrase("enter passphrase: ")?;
+            let account_info = keystore::info(home, &address, &passphrase)?;
+            let _ = balances::show(&network, &account_info)?;
         }
         _ => panic!("unsupported"),
     };
 
     return Ok(());
+}
+
+fn address(home: &str, maybe_address: Option<String>) -> Result<String, Error> {
+    let address = match maybe_address {
+        Some(address) => address,
+        None => {
+            let cfg = config::load(home)?;
+            cfg.account
+        }
+    };
+
+    match address.is_empty() {
+        true => Err(Error::NoAccountSpecified),
+        false => Ok(address),
+    }
+}
+
+fn network(home: &str, maybe_network: Option<String>) -> Result<String, Error> {
+    let n = match maybe_network {
+        Some(n) => n,
+        None => {
+            let cfg = config::load(home)?;
+            cfg.network
+        }
+    };
+
+    match n.is_empty() {
+        true => Err(Error::NoAccountSpecified),
+        false => Ok(n),
+    }
 }
 
 fn passphrase_with_confirmation() -> Result<String, Error> {
@@ -97,7 +151,7 @@ struct ErrorDump<'l> {
 fn print_error(e: &str) {
     let err = ErrorDump { error: e };
     let serialized = serde_json::to_string_pretty(&err).unwrap();
-    println!("{}", serialized);
+    print!("{}", serialized);
 }
 
 fn print_success<T: Serialize>(output: &T) {

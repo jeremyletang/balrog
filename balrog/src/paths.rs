@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 
 const ACCOUNTS_PATH: &str = "accounts";
 const NETWORKS_PATH: &str = "networks";
-const CONFIG_PATH: &str = "config.toml";
+const CONFIG_PATH: &str = "config.json";
 
 #[derive(Serialize, Deserialize)]
 pub struct Paths {
