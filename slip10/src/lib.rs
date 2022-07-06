@@ -1,5 +1,3 @@
-#![feature(test)]
-
 use base58::ToBase58;
 use ed25519_compact::{KeyPair, Seed};
 use hmac::{Hmac, Mac, NewMac};
