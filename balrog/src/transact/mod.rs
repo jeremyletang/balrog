@@ -51,6 +51,17 @@ pub fn transact(
         .interact()
         .unwrap();
 
+    match COMMANDS[command] {
+        STAKE_DELEGATION => unimplemented!(),
+        STAKE_UNDELEGATION => unimplemented!(),
+        GOVERNANCE_VOTE => unimplemented!(),
+        GOVERNANCE_PROPOSAL => unimplemented!(),
+        ORDER_SUBMISSION => unimplemented!(),
+        ORDER_CANCELLATION => unimplemented!(),
+        ORDER_AMENDMENT => unimplemented!(),
+        _ => unreachable!(),
+    }
+
     return Ok(TransactionResult {
         transaction: "lol".to_string(),
         hash: "lol2".to_string(),
