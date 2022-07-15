@@ -15,11 +15,7 @@ pub enum Account {
 
 /// Generate new account
 #[derive(Args, Debug)]
-pub struct AccountCreate {
-    /// An address for which we want to derive new keys
-    #[clap(short, long)]
-    pub address: Option<String>,
-}
+pub struct AccountCreate {}
 
 /// Import an account using a keypair
 #[derive(Args, Debug)]

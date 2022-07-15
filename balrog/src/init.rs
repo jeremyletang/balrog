@@ -1,5 +1,4 @@
-use crate::paths;
-use crate::{config, errors::Error};
+use crate::{config, errors::Error, network, paths};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -36,9 +35,11 @@ pub fn run(home: &str, _force: bool) -> Result<Paths, Error> {
             home,
             &config::Config {
                 account: "".into(),
-                network: "".into(),
+                network: "mainnet".into(),
             },
         )?;
+
+        network::save_defaults(home)?;
     }
     return Ok(Paths {
         info,

@@ -112,16 +112,17 @@ fn handle_list_cmd(home: &str, ls: cmd::list::List) -> Result<(), Error> {
 fn handle_account_cmd(home: &str, acc: cmd::account::Account) -> Result<(), Error> {
     use cmd::account::Account;
     match acc {
-        Account::Create(generate) => match generate.address {
-            Some(_addr) => return Err(Error::HomePathIsNotADir),
-            None => {
-                let passphrase = passphrase_with_confirmation()?;
-                print_success(&keystore::generate(home, &passphrase)?)
-            }
-        },
+        Account::Create(_) => {
+            let passphrase = passphrase_with_confirmation()?;
+            let ks = keystore::generate(home, &passphrase)?;
+            print_success(&ks);
+            save_account_if_first_on_config(home, &ks.address)?;
+        }
         Account::Import(import) => {
             let passphrase = passphrase_with_confirmation()?;
-            print_success(&keystore::import(home, &import.mnemonic, &passphrase)?);
+            let ks = keystore::import(home, &import.mnemonic, &passphrase)?;
+            print_success(&ks);
+            save_account_if_first_on_config(home, &ks.address)?;
         }
         Account::Info(info) => {
             let address = address(home, info.address)?;
@@ -130,6 +131,16 @@ fn handle_account_cmd(home: &str, acc: cmd::account::Account) -> Result<(), Erro
         }
     };
 
+    return Ok(());
+}
+
+fn save_account_if_first_on_config(home: &str, address: &str) -> Result<(), Error> {
+    // update the config if it's the first one
+    let mut cfg = config::load(home)?;
+    if cfg.account.len() == 0 {
+        cfg.account = address.to_string();
+    }
+    let _ = config::save(home, &cfg)?;
     return Ok(());
 }
 
