@@ -9,6 +9,7 @@ edition = "2021"
 aes = "0.7.5"
 bip39 = {version = "1.0.1", features = ["rand"] }
 clap = { version = "3.2.6", features = ["derive"] }
+dialoguer = "0.10.1"
 dirs = "4.0"
 futures = "0.3"
 hex = "0.4"
@@ -21,5 +22,7 @@ slip10 = {path = "../slip10"}
 tabled = "0.7.0"
 tokio = { version = "1.0", features = [ "rt-multi-thread", "time", "fs", "macros", "net",] }
 tonic = "0.7.2"
+url = { version = "2", features = ["serde"] }
+#url_serde = { version = "0.2.0" }
 vega-rust-sdk = { git = "https://github.com/jeremyletang/vega-rust-sdk" }
 walkdir = "2"

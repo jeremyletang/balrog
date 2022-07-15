@@ -1,8 +1,9 @@
 use crate::client::DatanodeV2BlockingClient;
 use crate::errors::Error;
 use crate::keystore;
+use crate::util::format_balance;
 use std::collections::{HashMap, HashSet};
-use tabled::{Table, Tabled};
+use tabled::{object::Segment, Alignment, Modify, Table, Tabled};
 use vega_rust_sdk::vega::AccountType;
 
 #[derive(Tabled)]
@@ -15,13 +16,21 @@ struct Balance {
 }
 
 pub fn show(network: &str, info: &keystore::KeystoreInfo) -> Result<(), Error> {
+    let mut pks = vec![];
+
+    for key in info.keypairs.iter() {
+        pks.push(hex::encode(&key.public));
+    }
+    return show_pks(network, pks);
+}
+
+pub fn show_pks(network: &str, pks: Vec<String>) -> Result<(), Error> {
     let mut clt = DatanodeV2BlockingClient::connect(network.to_string())?;
     let mut asset_ids = HashSet::new();
     let mut accounts = vec![];
     let mut assets = HashMap::new();
 
-    for key in info.keypairs.iter() {
-        let pkey = hex::encode(&key.public);
+    for pkey in pks.iter() {
         let res = clt.get_account(&*pkey)?;
         for account in res.get_ref().accounts.iter() {
             asset_ids.insert(account.asset.clone());
@@ -56,31 +65,13 @@ pub fn show(network: &str, info: &keystore::KeystoreInfo) -> Result<(), Error> {
         })
     }
 
-    print!("{}", Table::new(balances).to_string());
+    print!(
+        "{}",
+        Table::new(balances)
+            .with(Modify::new(Segment::all()).with(Alignment::left()))
+            .to_string()
+    );
     return Ok(());
-}
-
-fn format_balance(mut balance: String, decimals: u64) -> String {
-    let mut udecs = decimals as usize;
-    let mut len = balance.len();
-    if len <= udecs {
-        while len < udecs {
-            balance.insert_str(0, "0");
-            len += 1;
-        }
-        balance.insert_str(0, "0.");
-        return balance;
-    }
-
-    let mut pos = len - udecs;
-    balance.insert_str(pos, ".");
-    // pos += ;
-    while pos > 3 {
-        pos -= 3;
-        balance.insert_str(pos, ",")
-    }
-
-    return balance;
 }
 
 fn account_type_to_string(atype: AccountType) -> String {
@@ -89,36 +80,5 @@ fn account_type_to_string(atype: AccountType) -> String {
         AccountType::General => "general".to_string(),
         AccountType::Bond => "bond".to_string(),
         _ => "unsupported".to_string(),
-    }
-}
-
-#[cfg(test)]
-mod test {
-    #[test]
-    fn test_format_balance() {
-        assert_eq!(
-            "0.011111111111111111",
-            super::format_balance("11111111111111111".to_string(), 18),
-        );
-        assert_eq!(
-            "0.111111111111111111",
-            super::format_balance("111111111111111111".to_string(), 18),
-        );
-        assert_eq!(
-            "0.000000000000000000",
-            super::format_balance("0".to_string(), 18),
-        );
-        assert_eq!(
-            "0.000000000000000001",
-            super::format_balance("1".to_string(), 18),
-        );
-        assert_eq!(
-            "2,640.215968683528541617",
-            super::format_balance("2640215968683528541617".to_string(), 18),
-        );
-        assert_eq!(
-            "10,198,232,640.215968683528541617",
-            super::format_balance("10198232640215968683528541617".to_string(), 18),
-        );
     }
 }

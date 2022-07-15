@@ -6,18 +6,22 @@ use info::Info;
 use init::Init;
 use list::List;
 use network::Network;
+use query::Query;
 use set::Set;
+use transact::Transact;
 
 pub mod account;
 pub mod info;
 pub mod init;
 pub mod list;
 pub mod network;
+pub mod query;
 pub mod set;
+pub mod transact;
 
 const DEFAULT_CONFIG_FOLDER: &'static str = ".balrog";
 
-/// The balrog wallet. An implementation of wallet for the vega network.
+/// The balrog wallet. An alternative implementation of a wallet for the vega network.
 #[derive(Parser, Debug)]
 #[clap(version = "1.0", author = "Jeremy Letang me@jeremyletang.com>")]
 #[clap(name = "balrog")]
@@ -46,6 +50,9 @@ pub enum SubCommands {
     List(List),
     #[clap(subcommand)]
     Network(Network),
+    #[clap(subcommand)]
+    Query(Query),
+    Transact(Transact),
 }
 
 #[derive(Debug)]

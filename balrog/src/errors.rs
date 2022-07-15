@@ -8,6 +8,7 @@ pub enum Error {
     HomePathIsNotADir,
     PassphrasesDoesNotMatch,
     NoAccountSpecified,
+    NoNetworkSpecified,
     IoError(io::Error),
     KeystoreError(keystore::Error),
     // TomlError(toml::de::Error),
@@ -60,6 +61,9 @@ impl Error {
         match self {
             NoAccountSpecified => {
                 "no account specified either in configuration or as a flag".into()
+            }
+            NoNetworkSpecified => {
+                "no network specified either in configuration or as a flag".into()
             }
             HomePathIsNotADir => "home path is not a directory".into(),
             PassphrasesDoesNotMatch => "passphrases does not match".into(),

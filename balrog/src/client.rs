@@ -1,9 +1,8 @@
-use serde::de::IntoDeserializer;
 use tokio::runtime::{Builder, Runtime};
 
 use vega_rust_sdk::datanode::api::v2::{
     trading_data_service_client::TradingDataServiceClient, AssetByIdRequest, AssetByIdResponse,
-    PartyAccountsRequest, PartyAccountsResponse,
+    GetNodesRequest, GetNodesResponse, PartyAccountsRequest, PartyAccountsResponse,
 };
 use vega_rust_sdk::vega::api::v1::{
     core_service_client::CoreServiceClient, LastBlockHeightRequest, LastBlockHeightResponse,
@@ -52,6 +51,10 @@ impl DatanodeV2BlockingClient {
         let client = rt.block_on(TradingDataServiceClient::connect(dst))?;
 
         Ok(Self { client, rt })
+    }
+
+    pub fn get_nodes(&mut self) -> Result<tonic::Response<GetNodesResponse>, tonic::Status> {
+        self.rt.block_on(self.client.get_nodes(GetNodesRequest {}))
     }
 
     pub fn get_account(
