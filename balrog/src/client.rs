@@ -11,6 +11,7 @@ use vega_rust_sdk::vega::api::v1::{
     SubmitTransactionRequest, SubmitTransactionResponse,
 };
 use vega_rust_sdk::vega::commands::v1::Transaction;
+use vega_rust_sdk::vega::AccountType;
 
 type StdError = Box<dyn std::error::Error + Send + Sync + 'static>;
 // type Result<T, E = StdError> = ::std::result::Result<T, E>;
@@ -46,7 +47,7 @@ impl CoreBlockingClient {
         self.rt
             .block_on(self.client.submit_transaction(SubmitTransactionRequest {
                 tx: Some(transaction),
-                r#type: 1,
+                r#type: Type::Sync.into(),
             }))
     }
 }
@@ -90,7 +91,7 @@ impl DatanodeV2BlockingClient {
                 party_id: party_id.into(),
                 market_id: String::new(),
                 asset: String::new(),
-                r#type: Type::Sync.into(),
+                r#type: AccountType::General.into(),
             }))
     }
 

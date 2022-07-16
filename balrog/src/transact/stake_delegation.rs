@@ -1,6 +1,6 @@
 use crate::client::DatanodeV2BlockingClient;
 use crate::errors::Error;
-use dialoguer::{theme::ColorfulTheme, Confirm, Input, Select};
+use dialoguer::{theme::ColorfulTheme, Input, Select};
 use vega_rust_sdk::vega::commands::v1::input_data::Command;
 use vega_rust_sdk::vega::commands::v1::DelegateSubmission;
 
