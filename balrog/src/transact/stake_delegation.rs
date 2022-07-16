@@ -6,9 +6,9 @@ use vega_rust_sdk::vega::commands::v1::DelegateSubmission;
 
 pub fn run(clt: &mut DatanodeV2BlockingClient) -> Result<Command, Error> {
     // first get list of proposals, if none are available to vote on, return.
-    let resp = clt.get_nodes()?;
+    let pnodes = clt.get_nodes()?;
     let mut nodes = vec![];
-    for n in resp.get_ref().nodes.iter() {
+    for n in pnodes.nodes.iter() {
         nodes.push(n.id.clone())
     }
 

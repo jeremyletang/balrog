@@ -9,7 +9,7 @@ pub fn run(clt: &mut DatanodeV2BlockingClient) -> Result<Command, Error> {
     // first get list of proposals, if none are available to vote on, return.
     let resp = clt.get_proposals()?;
     let mut proposals = vec![];
-    for p in resp.get_ref().data.iter() {
+    for p in resp.data.iter() {
         proposals.push(p.proposal.as_ref().unwrap().id.clone())
     }
 

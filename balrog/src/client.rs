@@ -33,11 +33,11 @@ impl CoreBlockingClient {
         Ok(Self { client, rt })
     }
 
-    pub fn last_block_height(
-        &mut self,
-    ) -> Result<tonic::Response<LastBlockHeightResponse>, tonic::Status> {
-        self.rt
-            .block_on(self.client.last_block_height(LastBlockHeightRequest {}))
+    pub fn last_block_height(&mut self) -> Result<LastBlockHeightResponse, tonic::Status> {
+        Ok(self
+            .rt
+            .block_on(self.client.last_block_height(LastBlockHeightRequest {}))?
+            .into_inner())
     }
 
     pub fn submit_transaction(
@@ -71,39 +71,41 @@ impl DatanodeV2BlockingClient {
         Ok(Self { client, rt })
     }
 
-    pub fn get_nodes(&mut self) -> Result<tonic::Response<GetNodesResponse>, tonic::Status> {
-        self.rt.block_on(self.client.get_nodes(GetNodesRequest {}))
+    pub fn get_nodes(&mut self) -> Result<GetNodesResponse, tonic::Status> {
+        Ok(self
+            .rt
+            .block_on(self.client.get_nodes(GetNodesRequest {}))?
+            .into_inner())
     }
 
-    pub fn get_proposals(
-        &mut self,
-    ) -> Result<tonic::Response<GetProposalsResponse>, tonic::Status> {
-        self.rt
+    pub fn get_proposals(&mut self) -> Result<GetProposalsResponse, tonic::Status> {
+        Ok(self
+            .rt
             .block_on(self.client.get_proposals(GetProposalsRequest {
                 select_in_state: None,
-            }))
+            }))?
+            .into_inner())
     }
 
-    pub fn get_account(
-        &mut self,
-        party_id: &str,
-    ) -> Result<tonic::Response<PartyAccountsResponse>, tonic::Status> {
-        self.rt
+    pub fn get_account(&mut self, party_id: &str) -> Result<PartyAccountsResponse, tonic::Status> {
+        Ok(self
+            .rt
             .block_on(self.client.party_accounts(PartyAccountsRequest {
                 party_id: party_id.into(),
                 market_id: String::new(),
                 asset: String::new(),
                 r#type: AccountType::General.into(),
-            }))
+            }))?
+            .into_inner())
     }
 
-    pub fn get_asset(
-        &mut self,
-        asset_id: &str,
-    ) -> Result<tonic::Response<AssetByIdResponse>, tonic::Status> {
-        self.rt.block_on(self.client.asset_by_id(AssetByIdRequest {
-            id: asset_id.to_string(),
-        }))
+    pub fn get_asset(&mut self, asset_id: &str) -> Result<AssetByIdResponse, tonic::Status> {
+        Ok(self
+            .rt
+            .block_on(self.client.asset_by_id(AssetByIdRequest {
+                id: asset_id.to_string(),
+            }))?
+            .into_inner())
     }
 
     pub fn get_party_stake(&mut self, party_id: &str) -> Result<PartyStakeResponse, tonic::Status> {

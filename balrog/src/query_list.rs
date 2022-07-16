@@ -19,7 +19,7 @@ pub fn show(network: &str) -> Result<(), Error> {
     let res = clt.get_nodes()?;
     let mut nodes = vec![];
 
-    for node in res.get_ref().nodes.iter() {
+    for node in res.nodes.iter() {
         nodes.push(Node {
             id: node.id.clone(),
             name: node.name.clone(),

@@ -32,16 +32,15 @@ pub fn show_pks(network: &str, pks: Vec<String>) -> Result<(), Error> {
 
     for pkey in pks.iter() {
         let res = clt.get_account(&*pkey)?;
-        for account in res.get_ref().accounts.iter() {
+        for account in res.accounts.iter() {
             asset_ids.insert(account.asset.clone());
             accounts.push(account.clone());
         }
     }
 
     for id in asset_ids.iter() {
-        let mut res = clt.get_asset(&*id)?;
+        let res = clt.get_asset(&*id)?;
         let details = res
-            .get_mut()
             .asset
             .as_ref()
             .unwrap()

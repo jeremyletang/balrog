@@ -80,9 +80,9 @@ pub fn transact(
         command.clone(),
         &kps[pkey],
         pks[pkey].clone(),
-        res.get_ref().height,
-        &res.get_ref().hash,
-        res.get_ref().spam_pow_difficulty as usize,
+        res.height,
+        &res.hash,
+        res.spam_pow_difficulty as usize,
     )?;
 
     let resp = coreclt.submit_transaction(tx.clone())?;
