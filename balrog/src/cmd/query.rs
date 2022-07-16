@@ -5,6 +5,8 @@ use clap::{Args, Subcommand};
 pub enum Query {
     #[clap(version = "1.0")]
     Balances(QueryBalances),
+    #[clap(version = "1.0")]
+    Stake(QueryStake),
     #[clap(subcommand, version = "1.0")]
     List(QueryList),
 }
@@ -12,6 +14,17 @@ pub enum Query {
 /// Get balances on the network
 #[derive(Args, Debug)]
 pub struct QueryBalances {
+    /// An optional list of vega public keys for which to get balances on the network
+    #[clap(value_parser)]
+    pub public_keys: Vec<String>,
+    /// The address of a data-node from the network
+    #[clap(short, long)]
+    pub network: Option<String>,
+}
+
+/// Get stake balances on the network
+#[derive(Args, Debug)]
+pub struct QueryStake {
     /// An optional list of vega public keys for which to get balances on the network
     #[clap(value_parser)]
     pub public_keys: Vec<String>,

@@ -17,6 +17,7 @@ mod network;
 pub mod paths;
 mod pow;
 mod query_list;
+mod stake;
 mod transact;
 mod util;
 
@@ -64,6 +65,17 @@ fn handle_query(home: &str, args: cmd::query::Query) -> Result<(), Error> {
                 let passphrase = passphrase("enter passphrase: ")?;
                 let account_info = keystore::info(home, &address, &passphrase)?;
                 let _ = balances::show(&network.primary_rpc.as_str(), &account_info)?;
+            }
+        }
+        Query::Stake(qb) => {
+            let network = network(home, qb.network)?;
+            if qb.public_keys.len() > 0 {
+                let _ = stake::show_pks(&network.primary_rpc.as_str(), qb.public_keys)?;
+            } else {
+                let address = address(home, None)?;
+                let passphrase = passphrase("enter passphrase: ")?;
+                let account_info = keystore::info(home, &address, &passphrase)?;
+                let _ = stake::show(&network.primary_rpc.as_str(), &account_info)?;
             }
         }
         Query::List(subc) => handle_query_list(home, subc)?,

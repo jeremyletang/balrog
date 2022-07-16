@@ -3,7 +3,7 @@ use tokio::runtime::{Builder, Runtime};
 use vega_rust_sdk::datanode::api::v2::{
     trading_data_service_client::TradingDataServiceClient, AssetByIdRequest, AssetByIdResponse,
     GetNodesRequest, GetNodesResponse, GetProposalsRequest, GetProposalsResponse,
-    PartyAccountsRequest, PartyAccountsResponse,
+    PartyAccountsRequest, PartyAccountsResponse, PartyStakeRequest, PartyStakeResponse,
 };
 use vega_rust_sdk::vega::api::v1::submit_transaction_request::Type;
 use vega_rust_sdk::vega::api::v1::{
@@ -43,12 +43,14 @@ impl CoreBlockingClient {
     pub fn submit_transaction(
         &mut self,
         transaction: Transaction,
-    ) -> Result<tonic::Response<SubmitTransactionResponse>, tonic::Status> {
-        self.rt
+    ) -> Result<SubmitTransactionResponse, tonic::Status> {
+        Ok(self
+            .rt
             .block_on(self.client.submit_transaction(SubmitTransactionRequest {
                 tx: Some(transaction),
                 r#type: Type::Sync.into(),
-            }))
+            }))?
+            .into_inner())
     }
 }
 
@@ -102,5 +104,14 @@ impl DatanodeV2BlockingClient {
         self.rt.block_on(self.client.asset_by_id(AssetByIdRequest {
             id: asset_id.to_string(),
         }))
+    }
+
+    pub fn get_party_stake(&mut self, party_id: &str) -> Result<PartyStakeResponse, tonic::Status> {
+        Ok(self
+            .rt
+            .block_on(self.client.party_stake(PartyStakeRequest {
+                party: party_id.to_string(),
+            }))?
+            .into_inner())
     }
 }

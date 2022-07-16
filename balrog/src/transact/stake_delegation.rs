@@ -24,7 +24,7 @@ pub fn run(clt: &mut DatanodeV2BlockingClient) -> Result<Command, Error> {
         .unwrap();
 
     let value: String = Input::with_theme(&ColorfulTheme::default())
-        .with_prompt("what amount to delegate")
+        .with_prompt("amount to delegate")
         .interact_text()
         .unwrap();
 

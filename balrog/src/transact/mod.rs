@@ -2,7 +2,9 @@ use crate::client::{CoreBlockingClient, DatanodeV2BlockingClient};
 use crate::errors::Error;
 use crate::{keystore, network};
 use dialoguer::{theme::ColorfulTheme, Select};
-use serde::{Deserialize, Serialize};
+use url::Url;
+use vega_rust_sdk::vega::commands::v1::input_data::Command;
+use vega_rust_sdk::vega::commands::v1::{ProofOfWork, Signature};
 
 mod governance_vote;
 mod stake_delegation;
@@ -24,11 +26,15 @@ const COMMANDS: &[&str] = &[
     ORDER_CANCELLATION,
     ORDER_AMENDMENT,
 ];
-
-#[derive(Serialize, Deserialize, Debug)]
+// https://explorer.fairground.wtf/txs/0x80C87FDE932170B11333CC7AE3911D47D3DA9E24CFE069BFC6E06A70C2F07003
+//#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug)]
 pub struct TransactionResult {
-    pub transaction: String,
-    pub hash: String,
+    pub success: bool,
+    pub explorer_link: String,
+    pub signature: Signature,
+    pub proof_of_work: ProofOfWork,
+    pub command: Command,
 }
 
 pub fn transact(
@@ -80,10 +86,24 @@ pub fn transact(
     )?;
 
     let resp = coreclt.submit_transaction(tx.clone())?;
-    println!("{:#?}", resp);
 
-    return Ok(TransactionResult {
-        transaction: "lol".to_string(),
-        hash: "lol2".to_string(),
-    });
+    let tres = TransactionResult {
+        success: resp.success,
+        explorer_link: make_explorer_link(_n.block_explorer, resp.tx_hash).to_string(),
+        signature: tx.signature.unwrap(),
+        proof_of_work: tx.pow.unwrap(),
+        command,
+    };
+
+    println!("{:#?}", tres);
+
+    return Ok(tres);
+}
+
+fn make_explorer_link(base_url: Url, hash: String) -> Url {
+    base_url
+        .join("txs/")
+        .unwrap()
+        .join(&("0x".to_string() + &hash))
+        .unwrap()
 }
