@@ -1,4 +1,5 @@
 use clap::Parser;
+use client::{CoreBlockingClient, DatanodeV2BlockingClient};
 use cmd::{Opts, SubCommands};
 use dialoguer::{theme::ColorfulTheme, Password};
 use errors::Error;
@@ -14,6 +15,7 @@ pub mod keystore;
 mod list;
 mod network;
 pub mod paths;
+mod pow;
 mod query_list;
 mod transact;
 mod util;
@@ -44,7 +46,9 @@ fn handle_transact(home: &str, args: cmd::transact::Transact) -> Result<(), Erro
     let address = address(home, None)?;
     let passphrase = passphrase("enter passphrase: ")?;
     let ks = keystore::load(home, &address, &passphrase)?;
-    transact::transact(ks, network, &passphrase)?;
+    let mut clt = DatanodeV2BlockingClient::connect(network.primary_rpc.to_string())?;
+    let mut coreclt = CoreBlockingClient::connect(network.primary_rpc.to_string())?;
+    transact::transact(ks, network, &passphrase, &mut clt, &mut coreclt)?;
     return Ok(());
 }
 

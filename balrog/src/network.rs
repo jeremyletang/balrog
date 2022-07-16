@@ -1,4 +1,3 @@
-use crate::cmd::network;
 use crate::errors::Error;
 use crate::paths;
 use serde::{Deserialize, Serialize};

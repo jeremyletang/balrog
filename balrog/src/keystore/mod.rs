@@ -1,10 +1,12 @@
 use crate::paths;
 use account::Account;
-pub use errors::Error;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+
+pub use account::Keypair;
+pub use errors::Error;
 
 mod account;
 mod aes;

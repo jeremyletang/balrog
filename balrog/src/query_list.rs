@@ -1,7 +1,6 @@
+use crate::client::DatanodeV2BlockingClient;
 use crate::errors::Error;
 use crate::util::format_balance;
-use crate::{client::DatanodeV2BlockingClient, cmd::network};
-use std::collections::{HashMap, HashSet};
 use tabled::{object::Segment, Alignment, Modify, Table, Tabled};
 use vega_rust_sdk::vega::NodeStatus;
 

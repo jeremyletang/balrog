@@ -37,7 +37,7 @@ mod test {
             "0.111111111111111111",
             super::format_balance("111111111111111111".to_string(), 18),
         );
-        assert_eq!("0.0", super::format_balance("0".to_string(), 18),);
+        assert_eq!("0", super::format_balance("0".to_string(), 18),);
         assert_eq!(
             "0.000000000000000001",
             super::format_balance("1".to_string(), 18),
