@@ -41,7 +41,6 @@ pub fn build_and_sign(
         pow: Some(ProofOfWork {
             tid: txid,
             nonce: pow_nonce,
-            hash_function: pow::HASH_FUNCTION.to_string(),
         }),
     };
 

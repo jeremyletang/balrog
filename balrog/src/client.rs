@@ -1,6 +1,6 @@
 use tokio::runtime::{Builder, Runtime};
 
-use vega_rust_sdk::datanode::api::v2::{
+use vega_rust_sdk::datanode::api::v1::{
     trading_data_service_client::TradingDataServiceClient, AssetByIdRequest, AssetByIdResponse,
     GetNodesRequest, GetNodesResponse, GetProposalsRequest, GetProposalsResponse,
     PartyAccountsRequest, PartyAccountsResponse, PartyStakeRequest, PartyStakeResponse,

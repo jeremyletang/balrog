@@ -87,6 +87,7 @@ pub fn transact(
 
     let resp = coreclt.submit_transaction(tx.clone())?;
 
+    println!("{:#?}", resp);
     let tres = TransactionResult {
         success: resp.success,
         explorer_link: make_explorer_link(_n.block_explorer, resp.tx_hash).to_string(),

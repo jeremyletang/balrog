@@ -4,7 +4,6 @@ pub use errors::Error;
 
 pub mod errors;
 
-pub const HASH_FUNCTION: &str = "sha3_24_rounds";
 const MAX_NONCE: u64 = u64::MAX;
 
 const PREFIX: &str = "Vega_SPAM_PoW";
