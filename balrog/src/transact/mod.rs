@@ -3,8 +3,8 @@ use crate::errors::Error;
 use crate::{keystore, network};
 use dialoguer::{theme::ColorfulTheme, Select};
 use url::Url;
-use vega_rust_sdk::vega::commands::v1::input_data::Command;
-use vega_rust_sdk::vega::commands::v1::{ProofOfWork, Signature};
+use vega_protobufs::vega::commands::v1::input_data::Command;
+use vega_protobufs::vega::commands::v1::{ProofOfWork, Signature};
 
 mod governance_vote;
 mod stake_delegation;

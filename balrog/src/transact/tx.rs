@@ -5,9 +5,9 @@ use ed25519_compact::SecretKey;
 use prost::Message;
 use rand::{thread_rng, Rng};
 use sha3::{Digest, Sha3_256};
-use vega_rust_sdk::vega::commands::v1::input_data::Command;
-use vega_rust_sdk::vega::commands::v1::transaction::From;
-use vega_rust_sdk::vega::commands::v1::{InputData, ProofOfWork, Signature, Transaction};
+use vega_protobufs::vega::commands::v1::input_data::Command;
+use vega_protobufs::vega::commands::v1::transaction::From;
+use vega_protobufs::vega::commands::v1::{InputData, ProofOfWork, Signature, Transaction};
 
 pub fn build_and_sign(
     command: Command,

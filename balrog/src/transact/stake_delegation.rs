@@ -1,15 +1,15 @@
 use crate::client::DatanodeV2BlockingClient;
 use crate::errors::Error;
 use dialoguer::{theme::ColorfulTheme, Input, Select};
-use vega_rust_sdk::vega::commands::v1::input_data::Command;
-use vega_rust_sdk::vega::commands::v1::DelegateSubmission;
+use vega_protobufs::vega::commands::v1::input_data::Command;
+use vega_protobufs::vega::commands::v1::DelegateSubmission;
 
 pub fn run(clt: &mut DatanodeV2BlockingClient) -> Result<Command, Error> {
     // first get list of proposals, if none are available to vote on, return.
     let pnodes = clt.get_nodes()?;
     let mut nodes = vec![];
-    for n in pnodes.nodes.iter() {
-        nodes.push(n.id.clone())
+    for n in pnodes.nodes.unwrap().edges.iter() {
+        nodes.push(n.node.as_ref().unwrap().id.clone())
     }
 
     if nodes.len() == 0 {

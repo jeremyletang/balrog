@@ -4,7 +4,7 @@ use crate::keystore;
 use crate::util::format_balance;
 use std::collections::{HashMap, HashSet};
 use tabled::{object::Segment, Alignment, Modify, Table, Tabled};
-use vega_rust_sdk::vega::AccountType;
+use vega_protobufs::vega::AccountType;
 
 #[derive(Tabled)]
 struct Balance {
@@ -32,9 +32,9 @@ pub fn show_pks(network: &str, pks: Vec<String>) -> Result<(), Error> {
 
     for pkey in pks.iter() {
         let res = clt.get_account(&*pkey)?;
-        for account in res.accounts.iter() {
-            asset_ids.insert(account.asset.clone());
-            accounts.push(account.clone());
+        for account in res.accounts.unwrap().edges.iter() {
+            asset_ids.insert(account.node.as_ref().unwrap().asset.clone());
+            accounts.push(account.node.as_ref().unwrap().clone());
         }
     }
 
